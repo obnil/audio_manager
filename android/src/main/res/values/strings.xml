@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name">播放器</string>
     <string name="title">音乐名</string>
     <string name="desc">作者</string>
     <string name="pause">暂停</string>
