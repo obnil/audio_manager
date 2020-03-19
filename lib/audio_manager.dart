@@ -175,7 +175,7 @@ class AudioManager {
       "auto": auto
     };
     _initialize = true;
-    final regx = new RegExp(r'^(http|https):\/\/([\w.]+\/?)\S*');
+    final regx = new RegExp(r'^(http|https|file):\/\/\/?([\w.]+\/?)\S*');
     final result = await _channel.invokeMethod('start', {
       "url": url,
       "title": title,

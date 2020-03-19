@@ -1,8 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'dart:async';
 
 import 'package:flutter/services.dart';
 import 'package:audio_manager/audio_manager.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:http/http.dart';
 
 void main() => runApp(MyApp());
 
@@ -19,12 +23,13 @@ class _MyAppState extends State<MyApp> {
   num _slider;
   String _error;
   num curIndex = 0;
+  String _path;
 
   @override
   void initState() {
     super.initState();
-
     initPlatformState();
+    downloadFile(list[1]["url"]);
   }
 
   @override
@@ -44,16 +49,16 @@ class _MyAppState extends State<MyApp> {
     {
       "title": "network",
       "desc": "network resouce playback",
-      "url": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+      "url": "http://music.163.com/song/media/outer/url?id=506520164.mp3",
       "cover":
-          "https://cdn.jsdelivr.net/gh/flutterchina/website@1.0/images/flutter-mark-square-100.png"
+          "http://p1.music.126.net/MVevKfyCw8InBCEmWX1NoQ==/109951164502635067.jpg?param=300x300"
     },
   ];
 
   void setupAudio(int idx) {
     final item = list[idx];
     curIndex = idx;
-
+    _path = item["url"];
     AudioManager.instance
         .start(item["url"], item["title"],
             desc: item["desc"], cover: item["cover"])
@@ -156,6 +161,7 @@ class _MyAppState extends State<MyApp> {
                         Divider(),
                     itemCount: list.length),
               ),
+              Center(child: Text('$_path')),
               Center(
                   child:
                       Text(_error != null ? _error : "lrc text: $_position")),
@@ -165,6 +171,24 @@ class _MyAppState extends State<MyApp> {
         ),
       ),
     );
+  }
+
+  Future downloadFile(String s) async {
+    final bytes = await readBytes(s);
+    final dir = await getApplicationDocumentsDirectory();
+    final file = File('${dir.path}/audio.mp3');
+
+    await file.writeAsBytes(bytes);
+    if (await file.exists()) {
+      list.add({
+        "title": "local",
+        "desc": "local file",
+        "url": "file://${file.path}",
+        "cover":
+            "http://p1.music.126.net/MVevKfyCw8InBCEmWX1NoQ==/109951164502635067.jpg?param=300x300"
+      });
+      setState(() {});
+    }
   }
 
   Widget bottomPanel() {
