@@ -2,8 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'dart:async';
-
-import 'package:flutter/services.dart';
 import 'package:audio_manager/audio_manager.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart';
@@ -16,7 +14,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  String _platformVersion = 'Unknown';
   bool isPlaying = false;
   Duration _duration;
   Duration _position;
@@ -24,13 +21,6 @@ class _MyAppState extends State<MyApp> {
   String _error;
   num curIndex = 0;
   String _path;
-
-  @override
-  void initState() {
-    super.initState();
-    initPlatformState();
-    downloadFile(list[1]["url"]);
-  }
 
   @override
   void dispose() {
@@ -49,9 +39,9 @@ class _MyAppState extends State<MyApp> {
     {
       "title": "network",
       "desc": "network resouce playback",
-      "url": "http://music.163.com/song/media/outer/url?id=506520164.mp3",
+      "url": "https://s3.amazonaws.com/pb_previews/264_sunday-at-the-park/264_full_sunday-at-the-park_0159_preview.mp3",
       "cover":
-          "http://p1.music.126.net/MVevKfyCw8InBCEmWX1NoQ==/109951164502635067.jpg?param=300x300"
+          "https://avatars0.githubusercontent.com/u/30790621?s=88&u=9421b3089fb9ba30b4433147252960ca07d5d1cf&v=4"
     },
   ];
 
@@ -120,33 +110,25 @@ class _MyAppState extends State<MyApp> {
     setupAudio(idx);
   }
 
-  // Platform messages are asynchronous, so we initialize in an async method.
-  Future<void> initPlatformState() async {
-    String platformVersion;
-    // Platform messages may fail, so we use a try/catch PlatformException.
-    try {
-      platformVersion = await AudioManager.instance.platformVersion;
-    } on PlatformException {
-      platformVersion = 'Failed to get platform version.';
-    }
-    if (!mounted) return;
-
-    setState(() {
-      _platformVersion = platformVersion;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
           title: const Text('Plugin audio player'),
+          actions: <Widget>[
+        new IconButton(
+            icon: new Icon(Icons.cloud_download),
+            tooltip: 'Download song',
+            onPressed: () {
+              downloadFile('https://s3.amazonaws.com/pb_previews/386_park-day/386_full_park-day_0134_preview.mp3');
+            }
+        ),
+          ],
         ),
         body: Center(
           child: Column(
             children: <Widget>[
-              Text('Running on: $_platformVersion\n'),
               Expanded(
                 child: ListView.separated(
                     itemBuilder: (context, item) {
