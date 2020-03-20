@@ -23,6 +23,12 @@ class _MyAppState extends State<MyApp> {
   String _path;
 
   @override
+  void initState() {
+    loadData();
+    super.initState();
+  }
+
+  @override
   void dispose() {
     // 释放所有资源
     AudioManager.instance.stop();
@@ -44,6 +50,21 @@ class _MyAppState extends State<MyApp> {
           "https://avatars0.githubusercontent.com/u/30790621?s=88&u=9421b3089fb9ba30b4433147252960ca07d5d1cf&v=4"
     },
   ];
+
+  loadData() async {
+    final dir = await getApplicationDocumentsDirectory();
+    List<FileSystemEntity> files = dir.listSync();
+    for (var file in files) {
+      list.add({
+        "title": "local",
+        "desc": "local file",
+        "url": "file://${file.path}",
+        "cover":
+            "http://p1.music.126.net/MVevKfyCw8InBCEmWX1NoQ==/109951164502635067.jpg?param=300x300"
+      });
+    }
+    setState(() {});
+  }
 
   void setupAudio(int idx) {
     final item = list[idx];
@@ -158,7 +179,8 @@ class _MyAppState extends State<MyApp> {
   Future downloadFile(String s) async {
     final bytes = await readBytes(s);
     final dir = await getApplicationDocumentsDirectory();
-    final file = File('${dir.path}/audio.mp3');
+    final time = new DateTime.now().millisecondsSinceEpoch;
+    final file = File('${dir.path}/$time.mp3');
 
     await file.writeAsBytes(bytes);
     if (await file.exists()) {
